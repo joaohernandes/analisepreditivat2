@@ -16,6 +16,10 @@ except Exception as e:
 # Remover registros com preco = 0
 data = data[data['preco'] > 0]
 
+# Remover coluna 'bairro_num' se existir
+if 'bairro_num' in data.columns:
+    data = data.drop(columns=['bairro_num'])
+
 # Separar variáveis independentes e dependentes
 X = data.drop(columns=['preco'])
 y = data['preco']
@@ -62,20 +66,15 @@ quartos = st.number_input("Número de Quartos", min_value=1, max_value=10, value
 banheiros = st.number_input("Número de Banheiros", min_value=1, max_value=10, value=1)
 garagem_coberta = st.number_input("Vagas na Garagem Coberta", min_value=0, max_value=5, value=1)
 
-# Criar select box para o código do bairro
-bairros_unicos = sorted(data['bairro_num'].unique())
-bairro_num = st.selectbox("Código do Bairro", bairros_unicos)
-
 tipo_casa_check = st.checkbox("É uma Casa?")
 tipo_casa = 1 if tipo_casa_check else 0
 tipo_predio = 1 if not tipo_casa_check else 0
 
-# Entrada adicional para previsao_classificacao_qualidade
 qualidade = st.selectbox("Classificação de Qualidade", [1, 2, 3])
 
 # Normalizar o input da área construída
-data_input = pd.DataFrame([[area_construcao, quartos, banheiros, garagem_coberta, bairro_num, tipo_casa, tipo_predio, qualidade]],
-                          columns=['area_construcao', 'quartos', 'banheiros', 'garagem_coberta', 'bairro_num', 'tipo_casa', 'tipo_predio', 'previsao_classificacao_qualidade'])
+data_input = pd.DataFrame([[area_construcao, quartos, banheiros, garagem_coberta, tipo_casa, tipo_predio, qualidade]],
+                          columns=['area_construcao', 'quartos', 'banheiros', 'garagem_coberta', 'tipo_casa', 'tipo_predio', 'previsao_classificacao_qualidade'])
 
 data_input['area_construcao'] = scaler.transform(data_input[['area_construcao']])
 
